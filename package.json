@@ -1,0 +1,38 @@
+{
+  "name": "bundleTool",
+  "version": "0.0.1",
+  "description": "Build bundle and patch file from git repository.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "bundleTool": "index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "nodejs",
+    "update",
+    "patch",
+    "hybrid"
+  ],
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "license": "MIT",
+  "author": "karos",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "copy-dir": "0.0.8",
+    "dir-compare": "^1.0.1",
+    "node-mkdirs": "0.0.1",
+    "node.svn": "^0.1.8",
+    "nodegit": "^0.19.0",
+    "promise": "^7.1.1",
+    "zip-folder": "^1.0.0"
+  }
+}
