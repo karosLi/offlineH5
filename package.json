@@ -1,13 +1,13 @@
 {
-  "name": "offlineH5",
+  "name": "offlineh5",
   "version": "0.0.1",
   "description": "Build full and update zip by git diff",
-  "main": "offlineH5.js",
+  "main": "offlineh5.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "offlineH5": "offlineH5.js"
+    "offlineh5": "offlineh5.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +17,6 @@
     "nodejs",
     "update",
     "patch",
-    "h5",
     "hybrid"
   ],
   "bugs": {
