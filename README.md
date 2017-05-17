@@ -1,4 +1,5 @@
 # offlineH5
+A front end tool to make update bundle zip file
 
 ## install
 ```
