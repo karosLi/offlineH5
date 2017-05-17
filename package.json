@@ -1,36 +1,36 @@
 {
-  "name": "bundleTool",
+  "name": "offlineH5",
   "version": "0.0.1",
-  "description": "Build bundle and patch file from git repository.",
-  "main": "index.js",
+  "description": "Build full and update zip by git diff",
+  "main": "offlineH5.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "bundleTool": "index.js"
+    "offlineH5": "offlineH5.js"
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/karosLi/offlineH5.git"
   },
   "keywords": [
     "nodejs",
     "update",
     "patch",
+    "h5",
     "hybrid"
   ],
   "bugs": {
-    "url": ""
+    "url": "https://github.com/karosLi/offlineH5/issues"
   },
-  "homepage": "",
+  "homepage": "https://github.com/karosLi/offlineH5",
   "license": "MIT",
   "author": "karos",
   "dependencies": {
     "commander": "^2.9.0",
     "copy-dir": "0.0.8",
-    "dir-compare": "^1.0.1",
+    "glob": "^7.1.1",
     "node-mkdirs": "0.0.1",
-    "node.svn": "^0.1.8",
     "nodegit": "^0.19.0",
     "promise": "^7.1.1",
     "zip-folder": "^1.0.0"
