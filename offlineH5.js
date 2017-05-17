@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * @file index.js
+ * @file offlineh5.js
  * @author karos
  */
 
