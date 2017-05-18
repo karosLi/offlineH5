@@ -1,6 +1,6 @@
 {
   "name": "offlineh5",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Build full and update zip by git diff",
   "main": "offlineh5.js",
   "scripts": {

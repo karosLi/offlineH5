@@ -31,7 +31,7 @@ var isDir = fileUtils.isDir;
 var $ = path.resolve.bind(path);
 
 (function() {
-	program.version('0.0.4')
+	program.version('0.0.5')
 		.usage('A front end tool to make update bundle zip file')
 		.option('-o, --outputPrefix <string>', 'Output prefix')
 		.option('-z, --zipPrefix <string>', 'Zip name prefix. Example: if zipPrefix is "m" then the zip name will be m.update.zip and m.full.zip, otherwize will be update.zip and full.zip')
@@ -452,7 +452,6 @@ function getCommitMessage(commit) {
 }
 
 function getCommitBlob(commit, path) {
-	console.log('dddddddddddddddddddddd ' + commit);
 	return commit.getEntry(path)
 	.then(function(entry) {
 		return entry.getBlob().then(function(blob) {
