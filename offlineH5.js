@@ -144,17 +144,29 @@ var $ = path.resolve.bind(path);
    
 		return allPromise
 		.then(function(commits) {
-			infolog('From commit: ' + commits[0].id().tostrS() + ' ' + commits[0].message());
-			infolog('To commit: ' + commits[1].id().tostrS() + ' ' + commits[1].message());
+			// 获取commits的版本号差别
+			var versionJsonPath = path.join(subfolder, 'version.json');
+			return Promise.all([getCommitBlobJson(commits[0], versionJsonPath), getCommitBlobJson(commits[1], versionJsonPath)])
+			.then(function(versionJsons) {
+				commitInfo.update.fromCommit = commits[0].id().tostrS();
+				commitInfo.update.toCommit = commits[1].id().tostrS();
 
-			commitInfo.update.fromCommit = commits[0].id().tostrS();
-			commitInfo.update.toCommit = commits[1].id().tostrS();
+				commitInfo.update.fromVersion = versionJsons[0].version;
+				commitInfo.update.toVersion = versionJsons[1].version;
 
+				infolog('From commit: ' + commits[0].id().tostrS() + ' ' + commits[0].message());
+				infolog('To commit: ' + commits[1].id().tostrS() + ' ' + commits[1].message());
+
+				infolog('From version: ' + commitInfo.update.fromVersion);
+				infolog('To verson: ' + commitInfo.update.toVersion);
+
+				return commits;
+			});
+		})
+		.then(function(commits) {
 			return gitDiff(repository, commits[0], commits[1]);
 		})
 		.then(function(entrys) {
-			var version = readResourceVersion(localRepoDir, subfolder);
-			commitInfo.update.toVersion = version;
 			var filteredEntrys = fileterEntrys(localRepoDir, subfolder, entrys);
 			var allMd5Promises = calcMd5s(localRepoDir, filteredEntrys);
 
@@ -163,7 +175,7 @@ var $ = path.resolve.bind(path);
 
 				return Promise.resolve(validate);
 			}).then(function(validate) {
-				return writeConfigFile(version, validate, outputUpdateFolder)
+				return writeConfigFile(commitInfo.update.toVersion, validate, outputUpdateFolder)
 				.then(function() {
 					return Promise.resolve(filteredEntrys);
 				});
@@ -173,7 +185,7 @@ var $ = path.resolve.bind(path);
 			return makePackage(localRepoDir, subfolder, entrys, outputUpdateFolder);
 		})
 		.then(function() {
-			var outputZipPath = path.join(path.dirname(localRepoDir), zipPrefix + 'update_' + commitInfo.update.toVersion + '.zip');
+			var outputZipPath = path.join(path.dirname(localRepoDir), zipPrefix + 'update_' + commitInfo.update.fromVersion + '_' + commitInfo.update.toVersion + '.zip');
 			return zipCode(outputUpdateFolder, outputZipPath)
 				.then(function() {
 					rmrf(outputUpdateFolder);
@@ -191,8 +203,20 @@ var $ = path.resolve.bind(path);
 
 		return getHeadCommit(repository)
 		.then(function(commit) {
-			commitInfo.full.toCommit = commit.id().tostrS();
+			// 获取commits的版本号差别
+			var versionJsonPath = path.join(subfolder, 'version.json');
+			return getCommitBlobJson(commit, versionJsonPath)
+			.then(function(versionJson) {
+				commitInfo.full.toCommit = commit.id().tostrS();
+				commitInfo.full.toVersion = versionJson.version;
 
+				infolog('Full to commit: ' + commit.id().tostrS() + ' ' + commit.message());
+				infolog('Full to verson: ' + commitInfo.full.toVersion);
+
+				return commit;
+			});
+		})
+		.then(function() {
 			return findResourcePath(path.join(localRepoDir, subfolder));
 		})
 		.then(function(files) {
@@ -203,8 +227,6 @@ var $ = path.resolve.bind(path);
 			return Promise.resolve(entrys);
 		})
 		.then(function(entrys) {
-			var version = readResourceVersion(localRepoDir, subfolder);
-			commitInfo.full.toVersion = version;
 			var filteredEntrys = fileterEntrys(localRepoDir, subfolder, entrys);
 			var allMd5Promises = calcMd5s(localRepoDir, filteredEntrys);
 
@@ -213,7 +235,7 @@ var $ = path.resolve.bind(path);
 
 				return Promise.resolve(validate);
 			}).then(function(validate) {
-				return writeConfigFile(version, validate, outputFullFolder)
+				return writeConfigFile(commitInfo.full.toVersion, validate, outputFullFolder)
 				.then(function() {
 					return Promise.resolve(filteredEntrys);
 				});
@@ -353,7 +375,7 @@ function readResourceVersion(localRepoDir, subfolder) {
 		var versionJson = JSON.parse(versionContent);
 		version = versionJson.version;
 	} catch (err) {
-		version = '0.0.1';
+		version = '0.0.0';
 	}
 
 	return version;
@@ -427,6 +449,38 @@ function getCommit(repository, commitId) {
 
 function getCommitMessage(commit) {
 		return commit.message();
+}
+
+function getCommitBlob(commit, path) {
+	console.log('dddddddddddddddddddddd ' + commit);
+	return commit.getEntry(path)
+	.then(function(entry) {
+		return entry.getBlob().then(function(blob) {
+      blob.entry = entry;
+      return blob;
+    });
+	});
+}
+
+function getCommitBlobString(commit, path) {
+	return getCommitBlob(commit, path)
+	.then(function(blob) {
+		return Promise.resolve(String(blob));
+	});
+}
+
+function getCommitBlobJson(commit, path) {
+	return getCommitBlobString(commit, path)
+	.then(function(string) {
+		var json;
+		try {
+			json = JSON.parse(string);
+		} catch (err) {
+			json = {};
+		}
+
+		return Promise.resolve(json);
+	});
 }
 
 function deepObject(object) {
