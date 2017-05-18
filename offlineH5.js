@@ -31,7 +31,7 @@ var isDir = fileUtils.isDir;
 var $ = path.resolve.bind(path);
 
 (function() {
-	program.version('0.0.5')
+	program.version('0.0.6')
 		.usage('A front end tool to make update bundle zip file')
 		.option('-o, --outputPrefix <string>', 'Output prefix')
 		.option('-z, --zipPrefix <string>', 'Zip name prefix. Example: if zipPrefix is "m" then the zip name will be m.update.zip and m.full.zip, otherwize will be update.zip and full.zip')
@@ -221,7 +221,9 @@ var $ = path.resolve.bind(path);
 		})
 		.then(function(files) {
 			var entrys = files.map(function(file) {
-				return {path: file};
+				var prefix = localRepoDir;
+				var relativePath = file.substring(prefix.length + 1);
+				return {path: relativePath};
 			});
 
 			return Promise.resolve(entrys);
