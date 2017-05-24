@@ -31,7 +31,7 @@ var isDir = fileUtils.isDir;
 var $ = path.resolve.bind(path);
 
 (function() {
-	program.version('0.0.6')
+	program.version('0.0.7')
 		.usage('A front end tool to make update bundle zip file')
 		.option('-o, --outputPrefix <string>', 'Output prefix')
 		.option('-z, --zipPrefix <string>', 'Zip name prefix. Example: if zipPrefix is "m" then the zip name will be m.update.zip and m.full.zip, otherwize will be update.zip and full.zip')
@@ -151,8 +151,8 @@ var $ = path.resolve.bind(path);
 				commitInfo.update.fromCommit = commits[0].id().tostrS();
 				commitInfo.update.toCommit = commits[1].id().tostrS();
 
-				commitInfo.update.fromVersion = versionJsons[0].version;
-				commitInfo.update.toVersion = versionJsons[1].version;
+				commitInfo.update.fromVersion = versionJsons[0].version || "0.0.1";
+				commitInfo.update.toVersion = versionJsons[1].version || "0.0.1";
 
 				infolog('From commit: ' + commits[0].id().tostrS() + ' ' + commits[0].message());
 				infolog('To commit: ' + commits[1].id().tostrS() + ' ' + commits[1].message());
@@ -208,7 +208,7 @@ var $ = path.resolve.bind(path);
 			return getCommitBlobJson(commit, versionJsonPath)
 			.then(function(versionJson) {
 				commitInfo.full.toCommit = commit.id().tostrS();
-				commitInfo.full.toVersion = versionJson.version;
+				commitInfo.full.toVersion = versionJson.version || "0.0.1";
 
 				infolog('Full to commit: ' + commit.id().tostrS() + ' ' + commit.message());
 				infolog('Full to verson: ' + commitInfo.full.toVersion);
@@ -384,12 +384,14 @@ function readResourceVersion(localRepoDir, subfolder) {
 }
 
 function buildValidate(entrys, md5s, subfolder) {
-	var validate = {};
+	var validate = [];
 	entrys.forEach(function(entry, index) {
 		var sourceFile = entry.path;
 		var distFile = sourceFile.substring(sourceFile.indexOf(subfolder) + subfolder.length + 1);
 
-		validate[distFile] = md5s[index];
+		var singleValidate = {"path": distFile,
+												 	"md5": md5s[index]};
+		validate.push(singleValidate);
 	});
 
 	return validate;
@@ -460,6 +462,7 @@ function getCommitBlob(commit, path) {
       blob.entry = entry;
       return blob;
     });
+	}, function(error) {
 	});
 }
 
